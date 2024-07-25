@@ -6,5 +6,5 @@ Unity 엔진을 기반으로 제작한 3D TPS 기반의 로그라이크 게임�
 - 개발언어 : C#
 
 ## 영상 및 기술서
-- 동영상 : https://youtu.be/WdM9Vwtj8K0
-- 기술서 : https://drive.google.com/file/d/1QcwO1wWVIJCWhvRPEaWDHnQZFe8QTMOG/view?usp=drive_link
+- 동영상 : 
+- 기술서 : 
