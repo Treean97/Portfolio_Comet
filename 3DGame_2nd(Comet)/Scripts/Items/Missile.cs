@@ -2,8 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+
+#if UNITY_EDITOR
 using UnityEngine.Rendering.Universal;
-using static UnityEditor.Experimental.GraphView.GraphView;
+using UnityEditor.Experimental.GraphView;
+#endif
 
 public class Missile : MonoBehaviour
 {
@@ -61,30 +64,31 @@ public class Missile : MonoBehaviour
     [SerializeField]
     MissileState _MissileState;
 
-
+    bool _LaunchStart = false;
 
     // Start is called before the first frame update
     void Start()
     {
         // 사운드 매니저
         _GameSounds = GameObject.FindObjectOfType<GameSounds>();
-
         _AttackPower = _ItemStatus.GetItemAdvValue;
         _NearEnemyColliderList = new List<Collider>();
         _MissileState = MissileState.Launch;
-        Launch();
-
-   
-    }
-
-    private void OnEnable()
-    {
-        Invoke("ReturnObject", _MaxDestroyDelay);
     }
 
     void ReturnObject()
     {
         ObjectPool._Inst.ReturnObject(this.gameObject);
+
+        // 다음 사용을 위해 셋업
+
+        _CurFireSpeed = 0;
+
+        transform.rotation = Quaternion.Euler(Vector3.zero);
+
+        _MissileState = MissileState.Launch;
+
+        _LaunchStart = false;
     }
 
     // Update is called once per frame
@@ -154,14 +158,22 @@ public class Missile : MonoBehaviour
 
     void Launch()
     {
-        _GameSounds.MissileLaunchSounds();
-
+        transform.rotation = Quaternion.Euler(Vector3.zero);
         _Rigidbody.velocity = Vector3.up * _LaunchSpeed;
-        StartCoroutine(nameof(LaunchDelay));
+
+        if(!_LaunchStart)
+        {
+            _LaunchStart = true;
+            StartCoroutine(nameof(LaunchSequence));
+        }
+        
     }
 
-    IEnumerator LaunchDelay()
+    IEnumerator LaunchSequence()
     {
+        Invoke("ReturnObject", _MaxDestroyDelay);
+        _GameSounds.MissileLaunchSounds();
+
         float tLaunchDelayTime = 0.5f;
 
         yield return new WaitForSeconds(tLaunchDelayTime);
@@ -197,6 +209,8 @@ public class Missile : MonoBehaviour
 
         _GameSounds.MissileHitSounds();
 
-        ObjectPool._Inst.ReturnObject(this.gameObject);
+        CancelInvoke("ReturnObject");
+
+        ReturnObject();
     }
 }

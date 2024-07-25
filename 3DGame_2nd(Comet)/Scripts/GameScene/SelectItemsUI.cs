@@ -1,15 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using TMPro.EditorUtilities;
 using UnityEngine;
 using UnityEngine.UI;
 
+#if UNITY_EDITOR
+using TMPro.EditorUtilities;
+#endif
+
 public class SelectItemsUI : MonoBehaviour
 {
-    [SerializeField]
-    Player _Player;
-
     [SerializeField]
     GameSceneUI _GameSceneUI;
 
@@ -33,8 +33,7 @@ public class SelectItemsUI : MonoBehaviour
 
     // Start is called before the first frame update
     void Start()
-    {
-        _Player = FindObjectOfType<Player>();
+    {        
         UpdateItemList();
     }
 

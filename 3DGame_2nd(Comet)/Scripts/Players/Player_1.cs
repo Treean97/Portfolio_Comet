@@ -1,9 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class Player_0 : Player
+public class Player_1 : Player
 {
     [SerializeField]
     Animator _PlayerAnimator;
@@ -18,14 +17,11 @@ public class Player_0 : Player
     [SerializeField]
     float _SpineRotSpeed;
 
-    float _MoveAniSpeed = 1.5f;
+    bool _Skill_0_IsActive = false;
 
-    // 스킬 속도 보너스%
-    float _Skill_0_SpeedBonus = 50;
-
-    float _Skill_0_MaxCoolTime = 10;
-    float _Skill_0_CurCoolTime = 10;
-    float _Skill_0_MaxDurationTime = 5;
+    float _Skill_0_CurCoolTime = 20;
+    float _Skill_0_MaxCoolTime = 20;
+    float _Skill_0_MaxDurationTime = 0;
 
     void Start()
     {
@@ -41,6 +37,7 @@ public class Player_0 : Player
         //_TotalJumpPower = _PlayerStatus.GetPlayerJumpPower;
         //_PlayerCriChance = _PlayerStatus.GetPlayerCriChange;
         //_TotalAttackDelay = _PlayerStatus.GetPlayerAttackDelay;
+
     }
 
     // Update is called once per frame
@@ -48,19 +45,20 @@ public class Player_0 : Player
     {
         base.Update();
 
-        if(Input.GetKeyDown(KeyCode.LeftShift))
+        // skill_0
+        if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             if (_Skill_0_CurCoolTime >= _Skill_0_MaxCoolTime)
             {
-                StartCoroutine(Skill_0());
+                Skill_0_Start();
             }
             else
             {
                 _GameSceneUI.WarningTextUI("Skill is CoolTime");
             }
-        }       
+        }
 
-        if(_Skill_0_CurCoolTime <= _Skill_0_MaxCoolTime)
+        if (_Skill_0_CurCoolTime <= _Skill_0_MaxCoolTime)
         {
             _Skill_0_CurCoolTime += Time.deltaTime;
         }
@@ -69,24 +67,30 @@ public class Player_0 : Player
 
     private void LateUpdate()
     {
-        if(Time.timeScale != 0)
+        if (Time.timeScale != 0)
         {
             float tMouseY = Input.GetAxisRaw("Mouse Y") * _SpineRotSpeed;
 
             _SpineRotationAngle = Mathf.Clamp(_SpineRotationAngle - tMouseY, -_SpineMaxRotationAngle, _SpineMaxRotationAngle);
             _PlayerSpine.localRotation = Quaternion.Euler(_SpineRotationAngle, _SpineAngle, 0);
-        }        
+        }
+        
     }
 
     protected override void PlayerMovement()
     {
         base.PlayerMovement();
 
-        // 좌, 우 애니메이션
-        _PlayerAnimator.SetFloat("MoveX", _MoveDir.x);
+        // 일시정지 아닐 때
+        if (Time.timeScale != 0)
+        {
+            // 좌, 우 애니메이션
+            _PlayerAnimator.SetFloat("MoveX", _MoveDir.x);
 
-        // 앞, 뒤 애니메이션
-        _PlayerAnimator.SetFloat("MoveZ", _MoveDir.z);
+            // 앞, 뒤 애니메이션
+            _PlayerAnimator.SetFloat("MoveZ", _MoveDir.z);
+        }
+        
     }
 
     protected override void PlayerJump()
@@ -105,45 +109,33 @@ public class Player_0 : Player
 
     void Skill_0_Start()
     {
-        _IsRunning = true;
-
         _Skill_0_CurCoolTime = 0;
 
-        //_SkillMgr.Skill_0_Duration(_Skill_0_MaxCoolTime, _Skill_0_MaxDurationTime);
+        // 효과
+        _Skill_0_IsActive = true;
+
+        // 쿨타임, 지속 시간 UI
         _SkillMgr.Skill(_Skill_0_MaxCoolTime, _Skill_0_MaxDurationTime, 0);
 
-        // 이동속도 50% 증가
-        CalApplySpeedMul(_Skill_0_SpeedBonus);
-
-        // 애니메이션 속도 증가
-        _PlayerAnimator.SetFloat("MoveAniSpeed", _MoveAniSpeed);
+        // 효과 켜짐 애니메이션
 
     }
 
-    void Skill_0_End()
+    public override void Damaged(float tDamage)
     {
-        _IsRunning = false;
-
-        // 이동속도 50% 다시 원래대로
-        CalApplySpeedMul(-_Skill_0_SpeedBonus);
-
-        // 애니메이션 속도 원래대로
-        _PlayerAnimator.SetFloat("MoveAniSpeed", 1);
-    }
-
-    IEnumerator Skill_0()
-    {
-        float tSkill_0_CurDurationTime = 0;
-
-        Skill_0_Start();
-
-        while (_Skill_0_MaxDurationTime >= tSkill_0_CurDurationTime)
+        if(_Skill_0_IsActive)
         {
-            tSkill_0_CurDurationTime += Time.deltaTime;
+            _Skill_0_IsActive = false;
 
-            yield return null;
+            // 지속 시간 UI 끄기
+            _SkillMgr.SkillDurationTimeInfinityOff(0);
+
+            // 효과 꺼짐 애니메이션
+
         }
-
-        Skill_0_End();
+        else
+        {
+            base.Damaged(tDamage);
+        }        
     }
 }

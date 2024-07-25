@@ -4,7 +4,12 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using static UnityEditor.Experimental.GraphView.GraphView;
+
+#if UNITY_EDITOR
+using UnityEditor.Experimental.GraphView;
+#endif
+
+
 
 public class CharacterSlot : MonoBehaviour
 {

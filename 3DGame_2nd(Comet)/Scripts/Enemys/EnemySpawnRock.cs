@@ -46,27 +46,9 @@ public class EnemySpawnRock : MonoBehaviour
     void Start()
     {     
         _StringBuilder = new StringBuilder();
-    }
-
-    private void OnEnable()
-    {
-        if(_Material == null)
-        {
-            _Material = _Renderer.material;
-        }
-        if(_ColliderRadius == 0)
-        {
-            _ColliderRadius = GetComponent<SphereCollider>().radius;
-        }
-        if(_EnemySpanwer == null)
-        {
-            _EnemySpanwer = GameObject.FindWithTag("EnemySpawner").GetComponent<EnemySpawner>();
-        }
-
-        GetComponent<SphereCollider>().enabled = true;
-        _Material.SetFloat("_DissolveAmount", 0);
-        _Renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
-        _Renderer.receiveShadows = true;
+        _Material = _Renderer.material;
+        _ColliderRadius = GetComponent<SphereCollider>().radius;
+        _EnemySpanwer = GameObject.FindWithTag("EnemySpawner").GetComponent<EnemySpawner>();
     }
 
     // Update is called once per frame
@@ -115,7 +97,6 @@ public class EnemySpawnRock : MonoBehaviour
         // 구체 콜라이더의 바닥이 소환 지점에 닿으면
         if (transform.position.y - _ColliderRadius <= _SpawnPos.y)
         {
-            _IsOnGround = true;
             OnGround();
         }
 
@@ -165,7 +146,19 @@ public class EnemySpawnRock : MonoBehaviour
         // 끝나면 적 움직이는 상태로 변경
         tEnemy.GetComponent<Enemy>().ChangeState(Enemy.STATE.Movement);
 
+        ReturnObject();
+    }
+
+    void ReturnObject()
+    {
         // 오브젝트 반납
         ObjectPool._Inst.ReturnObject(this.gameObject);
+
+        GetComponent<SphereCollider>().enabled = true;
+        _Material.SetFloat("_DissolveAmount", 0);
+        _CurDissolveAmount = 0;
+        _Renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
+        _Renderer.receiveShadows = true;
+        _IsOnGround = false;
     }
 }

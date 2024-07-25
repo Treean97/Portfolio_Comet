@@ -2,15 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class SettingSceneUI : MonoBehaviour
+public class SettingsUI : MonoBehaviour
 {
     [SerializeField]
     TMP_Text _MouseXSensValueText;
     [SerializeField]
-    TMP_Text _MouseYSensValueText;
+    TMP_Text _MouseYSensValueText; 
     [SerializeField]
     TMP_Text _BGMValueText;
     [SerializeField]
@@ -25,25 +24,21 @@ public class SettingSceneUI : MonoBehaviour
     [SerializeField]
     Slider _SoundEffectValueSlider;
 
+
     [SerializeField]
-    MainCameraRotate _Camera;
+    GameObject _SettingsUI;
 
-    [SerializeField]    
+    [SerializeField]
     FadeController _FadeController;
-
-    private void Start()
-    {
-        _FadeController.FadeIn();
-    }
 
     // Start is called before the first frame update
     void OnEnable()
-    {    
+    {
         // Data에 저장된 값 -> GameManager에 로드 후 가져오기
         _MouseXSensSlider.value = GameManager._Inst._DataSaveLoad._Data.XSens;
         _MouseYSensSlider.value = GameManager._Inst._DataSaveLoad._Data.YSens;
-        _BGMValueSlider.value = GameManager._Inst._DataSaveLoad._Data.XSens;
-        _SoundEffectValueSlider.value = GameManager._Inst._DataSaveLoad._Data.YSens;
+        _BGMValueSlider.value = GameManager._Inst._DataSaveLoad._Data.BGMValue;
+        _SoundEffectValueSlider.value = GameManager._Inst._DataSaveLoad._Data.SoundEffectValue;
     }
 
     // Update is called once per frame
@@ -64,13 +59,11 @@ public class SettingSceneUI : MonoBehaviour
         GameManager._Inst._DataSaveLoad._Data.SoundEffectValue = _SoundEffectValueSlider.value;
 
         // 데이터 저장
-        GameManager._Inst._DataSaveLoad.SaveData();        
+        GameManager._Inst._DataSaveLoad.SaveData();
     }
 
-    public void OnClickGoMainBtn()
-    {        
-        _FadeController.FadeOutWithChangeScene("MainScene");
-        _Camera.SaveCameraRot();
+    public void OnClickSettingsUIOffBtn()
+    {
+        _SettingsUI.SetActive(false);
     }
-
 }

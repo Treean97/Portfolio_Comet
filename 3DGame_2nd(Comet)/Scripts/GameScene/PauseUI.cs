@@ -37,4 +37,10 @@ public class PauseUI : MonoBehaviour
     {
         SettingsUI.SetActive(true);
     }
+
+    public bool IsSettingUIRunning()
+    {
+        return SettingsUI.activeSelf;
+        
+    }
 }

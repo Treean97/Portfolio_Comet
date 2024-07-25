@@ -16,22 +16,28 @@ public class DamageFontAnimation : MonoBehaviour
     float _NormalFontSize = 1f;
     float _MaxFontSize = 2f;
 
+    [SerializeField]
     GameObject _Player;
 
 
     // Start is called before the first frame update
     private void OnEnable()
-    {        
-        ResetSetting();
+    {
+        if(_Player == null)
+        {
+            _Player = GameObject.FindGameObjectWithTag("Player");
+        }
         
+        ResetSetting();
+
         StartCoroutine(FadeOut());
-        StartCoroutine(ScaleUp());        
+        StartCoroutine(ScaleUp());
+              
     }
 
     private void Awake()
-    {
+    {        
         _Text = GetComponent<TMP_Text>();
-        _Player = GameObject.FindGameObjectWithTag("Player");
     }
 
     // Update is called once per frame

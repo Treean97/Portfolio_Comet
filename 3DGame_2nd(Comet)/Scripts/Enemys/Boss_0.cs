@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class Boss_0 : Enemy
 {
@@ -139,6 +140,8 @@ public class Boss_0 : Enemy
             _CurEnemyHP += tDamage;
             _CurEnemyHP = Mathf.Clamp(_CurEnemyHP, 0, _MaxEnemyHP);
 
+            DrainText(tDamage);
+
             // 체력바 갱신
             _BossUI.UpdateHpBarValue(_CurEnemyHP);
 
@@ -146,7 +149,7 @@ public class Boss_0 : Enemy
         }
 
         base.Damaged(tDamage);
-
+                
         if (_CurEnemyHP <= 0)
         {
             _CurEnemyHP = Mathf.Clamp(_CurEnemyHP, 0, _MaxEnemyHP);
@@ -171,26 +174,36 @@ public class Boss_0 : Enemy
 
     public void SetOrbPosition()
     {
-        float radius = _OrbSpawnDistance;         //반지름
-        float angle = _OrbSpawnAngle;             //간격 각도
+        float tRadius = _OrbSpawnDistance;         //반지름
+        float tAngle = _OrbSpawnAngle;             //간격 각도
 
-        float currentAngle = 90;
+        Vector3 tTargetPos = _Player.transform.position + Vector3.up;
+
+        float tCurrentAngle = 90;
+
+        Vector3 tDirectionToTarget = (tTargetPos - transform.position).normalized;
+        Quaternion tRotationToTarget = Quaternion.LookRotation(tDirectionToTarget);
 
         for (int i = 0; i < _OrbMaxCount; i++)
         {
-            _OrbPositions[i] =
-                new Vector3(Mathf.Cos(currentAngle * Mathf.Deg2Rad) * radius, Mathf.Sin(currentAngle * Mathf.Deg2Rad) * radius, 0)
-                + this.transform.position;
+            Vector3 tSpawnPos = new Vector3(
+                Mathf.Cos(tCurrentAngle * Mathf.Deg2Rad) * tRadius,
+                Mathf.Sin(tCurrentAngle * Mathf.Deg2Rad) * tRadius,
+                0);
+
+            tSpawnPos = tRotationToTarget * tSpawnPos + transform.position;
+
+            _OrbPositions[i] = tSpawnPos;
 
             // 짝수
-            if(i % 2 == 0)
+            if (i % 2 == 0)
             {
-                currentAngle += angle * (i + 1);
+                tCurrentAngle += tAngle * (i + 1);
             }
             // 홀수
             else
             {
-                currentAngle -= angle * (i + 1);
+                tCurrentAngle -= tAngle * (i + 1);
             }
             
         }
@@ -251,10 +264,14 @@ public class Boss_0 : Enemy
             yield return new WaitForSeconds(_SpawnOrbDelay);
         }
 
+
+
         // 구체 발사        
         for (int i = 0; i < _OrbMaxCount; i++)
         {
-            tOrbs[i].GetComponent<Boss_0_Orb>().SetTargetPosition(_Player.transform.position - _OrbPositions[i]);
+            Vector3 tTargetPos = _Player.transform.position + Vector3.up;
+
+            tOrbs[i].GetComponent<Boss_0_Orb>().SetTargetPosition(tTargetPos - _OrbPositions[i]);
 
             yield return new WaitForSeconds(_OrbShotDelay);
         }
@@ -263,6 +280,11 @@ public class Boss_0 : Enemy
         _IsRunningPattern = false;
     }
 
+    public void Pattern_0_HitSount()
+    {
+        _AudioSource.clip = _BossPatternAudioClip[0];
+        _AudioSource.Play();
+    }
 
 
     // 2. 잠시 동안 데미지를 받으면 그만큼 체력 회복

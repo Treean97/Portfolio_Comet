@@ -1,11 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
+
+using static Player;
+
+#if UNITY_EDITOR
+using UnityEngine.Rendering.Universal;
 using System.IO.Pipes;
 using Unity.Burst.CompilerServices;
 using UnityEditor.PackageManager;
-using UnityEngine;
-using UnityEngine.Rendering.Universal;
-using static Player;
+#endif
 
 public class Player : MonoBehaviour
 {
@@ -128,9 +132,6 @@ public class Player : MonoBehaviour
     [SerializeField]
     protected float _CurAttackDelay;
 
-    [SerializeField]
-    DamageFontMgr _DamageFontMgr;
-
     // 인벤토리
     [SerializeField]
     Dictionary<int, int> _PlayerInventory = new Dictionary<int, int>();
@@ -193,7 +194,6 @@ public class Player : MonoBehaviour
         _GameSceneUI = GameObject.FindGameObjectWithTag("GameSceneUI").GetComponent<GameSceneUI>();
         _PlayerUI = GameObject.FindGameObjectWithTag("PlayerUI").GetComponent<PlayerUI>();
         _ItemMgr = GameObject.FindGameObjectWithTag("ItemMgr").GetComponent<ItemMgr>();
-        _DamageFontMgr = GameObject.FindGameObjectWithTag("DamageFontMgr").GetComponent<DamageFontMgr>();
 
         _TotalHp = _PlayerStatus.GetPlayerHP;
         _CurHp = _TotalHp;
@@ -234,21 +234,6 @@ public class Player : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.P))
         {
             UpdateMoney(1000);
-        }
-
-        // 인벤토리 확인 테스트
-        if(Input.GetKeyDown(KeyCode.I))
-        {
-            foreach (KeyValuePair<int, int> kvp in _PlayerInventory)
-            {
-                Debug.Log($"Key: {kvp.Key}, Value: {kvp.Value}");
-            }
-        }
-
-        // 아이템 테스트
-        if(Input.GetKeyDown(KeyCode.M))
-        {
-            ObjectPool._Inst.GetObject("Missile");
         }
 
 
@@ -349,7 +334,7 @@ public class Player : MonoBehaviour
         _MoveDir = new Vector3(tHorizonal, 0, tVertical);
         _MoveDir = _MoveDir.normalized;
 
-        // 점프 중이거나 달리는 중이 아닐 때
+        // 점프 중이거나 달리는 중이 아닐 때 , 일시정지 중이 아닐 때
         if(_PlayerState != PlayerState.Jump)
         {
             // 방향 입력이 있으면 (움직이는 중)

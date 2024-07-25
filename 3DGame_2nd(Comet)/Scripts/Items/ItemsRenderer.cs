@@ -17,6 +17,10 @@ public class ItemsRenderer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.Rotate(Vector3.up, _RotateSpeed);
+        if(Time.timeScale != 0)
+        {
+            transform.Rotate(Vector3.up, _RotateSpeed);
+        }
+        
     }
 }

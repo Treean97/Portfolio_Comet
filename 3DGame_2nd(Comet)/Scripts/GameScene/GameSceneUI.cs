@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Text;
 using TMPro;
 using UnityEngine;
-using static UnityEditor.Progress;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 public class GameSceneUI : MonoBehaviour
 {
@@ -118,7 +121,8 @@ public class GameSceneUI : MonoBehaviour
             _Player._GunState = Player.GunState.CanNotFire;
             _UIState = UIState.Running;
         }
-        else
+        // 끌 때 SettingUI가 켜져있는지 확인
+        else if(!_PauseUIGO.GetComponent<PauseUI>().IsSettingUIRunning())
         {            
             // Continue
             Time.timeScale = 1;

@@ -65,7 +65,7 @@ public class Enemy : MonoBehaviour
     AudioClip[] _AudioClip;
 
     [SerializeField]
-    DamageFontMgr _DamageFontMgr;
+    protected DamageFontMgr _DamageFontMgr;
     
 
     public enum STATE
@@ -160,6 +160,11 @@ public class Enemy : MonoBehaviour
     protected virtual void DamageText(float tDamage)
     {
         _DamageFontMgr.DamageUIObjectPool(tDamage, this.transform.position);
+    }
+
+    protected virtual void DrainText(float tDamage)
+    {
+        _DamageFontMgr.DrainUIObjectPool(tDamage, this.transform.position);
     }
 
     public virtual void Bleeding(float tBleedingDamage, float tBleedingChance)

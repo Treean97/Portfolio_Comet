@@ -63,6 +63,8 @@ public class Boss_0_Orb : MonoBehaviour
             
         }
 
+        FindObjectOfType<Boss_0>().Pattern_0_HitSount();
+
         Destroy(this.gameObject);
     }
 }
