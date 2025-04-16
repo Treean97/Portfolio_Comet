@@ -36,4 +36,4 @@ Unity 엔진을 기반으로 제작한 3D TPS 기반의 로그라이크 장르�
 
 ## 영상 및 기술서
 - 동영상 : https://youtu.be/086iRNFH7NM
-- 기술서 : https://drive.google.com/file/d/1jjD6qbU8mgU8lVwOtBv0_1LoCfyeHNBr/view?usp=drive_link
+- 기술서 : https://drive.google.com/file/d/16mcWP2yKtXzaJmvNjsGbU_zn3mou_Yr6/view?usp=drive_link
